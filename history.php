@@ -19,7 +19,6 @@ require_once __DIR__ . '/db.php';
             <h1><span>GEM</span>gen</h1>
             <p>Genome-Scale Metabolic Model Generator</p>
         </div>
-        <!-- LOGO PLACEHOLDER -->
     </div>
 </div>
 <div class="menu">
