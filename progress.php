@@ -5,16 +5,11 @@ require_once __DIR__ . '/db.php';
 $job_id  = preg_replace('/[^a-zA-Z0-9_\.]/', '', $_GET['job_id'] ?? '');
 $job_dir = __DIR__ . '/jobs/' . $job_id;
 
-// ── AJAX poll endpoint ────────────────────────────────────────────────────────
 if (isset($_GET['poll'])) {
     header('Content-Type: application/json');
-
-    // Read status.json written by pipeline.py
     $status_file = $job_dir . '/status.json';
     if (file_exists($status_file)) {
         $status = json_decode(file_get_contents($status_file), true);
-
-        // On done/error: sync MySQL
         $overall = $status['overall'] ?? 'pending';
         if (in_array($overall, ['done', 'error', 'fungi_error'])) {
             try {
@@ -37,7 +32,6 @@ if (isset($_GET['poll'])) {
     exit;
 }
 
-// ── Load params ───────────────────────────────────────────────────────────────
 $params = [];
 $params_file = $job_dir . '/params.json';
 if (file_exists($params_file)) {
@@ -62,7 +56,6 @@ if (file_exists($params_file)) {
             <h1><span>GEM</span>gen</h1>
             <p>Genome-Scale Metabolic Model Generator</p>
         </div>
-        <!-- LOGO PLACEHOLDER -->
     </div>
 </div>
 
@@ -92,8 +85,6 @@ if (file_exists($params_file)) {
     </div>
 
     <div class="progress-layout">
-
-        <!-- Stage tracker -->
         <div class="stage-tracker">
 
             <?php
@@ -121,10 +112,7 @@ if (file_exists($params_file)) {
             <?php endforeach; ?>
 
         </div><!-- /.stage-tracker -->
-
-        <!-- Sidebar -->
         <div class="progress-sidebar">
-
             <div class="progress-status-card">
                 <div class="progress-status-dot progress-status-dot--pending" id="status-dot"></div>
                 <div>
