@@ -1,18 +1,15 @@
 <?php
 session_start();
 require_once 'login.php';
-
-// Forces to landing page if trying to access search.php directly first
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php');
     exit();
 }
-// Inputs
-$protein  = trim($_POST['protein']   ?? ''); //trim to remove whitespace, ?? for null 
-$taxon    = trim($_POST['taxon']     ?? '');
-$max_seqs = intval($_POST['max_seqs'] ?? 50); // max 50
 
-// 1 ticked 0 non-ticked
+$protein  = trim($_POST['protein']   ?? '');
+$taxon    = trim($_POST['taxon']     ?? '');
+$max_seqs = intval($_POST['max_seqs'] ?? 50);
+
 $do_align = isset($_POST['do_align']) ? 1 : 0;
 $do_motif = isset($_POST['do_motif']) ? 1 : 0;
 $do_blast = isset($_POST['do_blast']) ? 1 : 0;
@@ -20,7 +17,6 @@ $do_pymol = isset($_POST['do_pymol']) ? 1 : 0;
 $do_tree  = isset($_POST['do_tree'])  ? 1 : 0;
 $do_hist  = 1;
 
-// Validate suitable inputs
 $errors = [];
 if ($protein === '')  $errors[] = 'Please enter a protein family name.';
 if ($taxon === '')    $errors[] = 'Please enter a taxonomic group.';
@@ -38,7 +34,6 @@ if (!empty($errors)) {
     exit();
 }
 
-// Connect to mySQL
 try {
     $dsn  = "mysql:host=127.0.0.1;dbname=$database;charset=utf8mb4";
     $conn = new PDO($dsn, $username, $password);
@@ -47,7 +42,6 @@ try {
     die('Database connection failed: ' . htmlspecialchars($e->getMessage()));
 }
 
-// Pre-check NCBI has results
 $check = shell_exec("python3 -c \"
 from Bio import Entrez
 Entrez.email = 's2837201@ed.ac.uk'
@@ -65,22 +59,17 @@ if ($count < 2) {
     exit();
 }
 
-
-// Insert the jobs
 $session_id = session_id();
 $stmt = $conn->prepare('
     INSERT INTO jobs (session_id, protein, taxon, max_seqs, do_align, do_motif, do_blast, do_pymol, do_tree, do_hist)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ');
 $stmt->execute([$session_id, $protein, $taxon, $max_seqs, $do_align, $do_motif, $do_blast, $do_pymol, $do_tree, $do_hist]);
-$job_id = $conn->lastInsertId(); // gets auto-increment job
+$job_id = $conn->lastInsertId();
 
-// Make the job directory
 $base_dir = '/localdisk/home/s2837201/public_html/ICA/data/job_' . $job_id;
-if (!mkdir($base_dir, 0777, true)) // true - create parent if needed
+if (!mkdir($base_dir, 0777, true))
     die('Failed to create output directory.');
-
-// Selected analyses
 $analyses = ['fetch', 'histogram'];
 if ($do_align) { $analyses[] = 'alignment'; $analyses[] = 'conservation'; }
 if ($do_motif) $analyses[] = 'motif';
@@ -90,11 +79,9 @@ if ($do_pymol) $analyses[] = 'pymol';
 $stmt = $conn->prepare("INSERT INTO analysis (job_id, analysis_type, status) VALUES (?, ?, 'Pending')");
 foreach ($analyses as $type) $stmt->execute([$job_id, $type]);
 
-// Call script
 require_once 'write_parsers.php';
 write_parsers($job_id, $base_dir, $username, $password, $database);
 
-// Another one
 require_once 'generate_script.php';
 $script = generate_script($job_id, $base_dir, $protein, $taxon, $max_seqs,
                            $do_align, $do_motif, $do_blast, $do_pymol,
@@ -104,11 +91,9 @@ $script_path = $base_dir . '/run_analysis.sh';
 file_put_contents($script_path, $script);
 chmod($script_path, 0755);
 
-// Log
 $log_path = $base_dir . '/log.txt';
 exec("nohup bash " . escapeshellarg($script_path) . " > " . escapeshellarg($log_path) . " 2>&1 &");
 
-// Redirect - pipeline running in background
 header("Location: progress.php?job_id={$job_id}");
 exit();
 ?>
