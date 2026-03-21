@@ -12,18 +12,15 @@ session_start();
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
     <div class="container header-inner">
         <div class="logo-block">
             <h1><span>GEM</span>gen</h1>
             <p>Genome-Scale Metabolic Model Generator &mdash; submerged fermentation optimisation for filamentous fungi</p>
         </div>
-        <!-- LOGO PLACEHOLDER: replace with <img src="images/logo.png" alt="GEMgen logo" class="logo-icon"> -->
     </div>
 </div>
 
-<!-- NAV -->
 <div class="menu">
     <div class="container">
         <a href="index.php" class="active">Home</a>
@@ -35,7 +32,6 @@ session_start();
     </div>
 </div>
 
-<!-- MAIN -->
 <div class="container">
 <div class="content">
 
@@ -55,7 +51,7 @@ if (isset($_GET['fungi_error'])) {
 
 <h2>Welcome to <span class="accent">GEM</span>gen</h2>
 <p>
-    GEMgen predicts TRY metrics — Titer, Rate, and Yield — for filamentous fungi in submerged fermentation,
+    GEMgen predicts TRY metrics (Titer, Rate, and Yield) for filamentous fungi in submerged fermentation,
     directly from your genome and bioreactor conditions. Upload a fungal genome, define your substrate
     and reactor parameters, and get an instant in-silico prediction to focus your wet lab effort.
     Any <a href="feedback.php">feedback</a> is greatly appreciated.
@@ -94,7 +90,6 @@ if (isset($_GET['fungi_error'])) {
 <form action="run.php" method="post" enctype="multipart/form-data" novalidate>
 <div class="form-panel">
 
-    <!-- ── GENOME ── -->
     <div class="section-label">Genome</div>
 
     <div class="field-group">
@@ -107,7 +102,6 @@ if (isset($_GET['fungi_error'])) {
         <input type="text" name="organism" placeholder="e.g. Fusarium venenatum, proprietary strain A"/>
     </div>
 
-    <!-- ── SUBSTRATE / MEDIA ── -->
     <div class="section-label">Substrate Composition</div>
 
     <div class="two-col-fields">
@@ -188,7 +182,6 @@ if (isset($_GET['fungi_error'])) {
         <span class="cn-note">&mdash; typical range for filamentous fungi: 10:1 to 30:1</span>
     </div>
 
-    <!-- ── BIOREACTOR ── -->
     <div class="section-label">Bioreactor Conditions</div>
 
     <div class="field-row-4">
@@ -261,7 +254,6 @@ if (isset($_GET['fungi_error'])) {
 
     </div><!-- /.field-row-4 -->
 
-    <!-- ── ADVANCED ── -->
     <details class="adv-section">
         <summary>Advanced options</summary>
         <div class="adv-inner">
@@ -363,7 +355,6 @@ if (isset($_SESSION['jobs']) && !empty($_SESSION['jobs'])) {
 </div><!-- /.content -->
 </div><!-- /.container -->
 
-<!-- FOOTER -->
 <div class="footer">
     <div class="container">
         <p>GEMgen &mdash; Genome-Scale Metabolic Model Generator &mdash; Pacifico Biolabs GmbH &times; BioHack Challenge 6</p>
@@ -376,7 +367,6 @@ if (isset($_SESSION['jobs']) && !empty($_SESSION['jobs'])) {
 </div>
 
 <script>
-// Client-side validation (replaces browser validation disabled by novalidate)
 document.querySelector('form').addEventListener('submit', function(e) {
     var fileInput = document.querySelector('[name="genome_file"]');
     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
@@ -394,7 +384,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
     }
 });
 
-// Live C:N ratio display (rough molar approximation)
 (function() {
     var cConc = document.querySelector('[name="carbon_conc"]');
     var nConc = document.querySelector('[name="nitrogen_conc"]');
