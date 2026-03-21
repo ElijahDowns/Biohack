@@ -1,11 +1,4 @@
 <?php
-/**
- * run.php
- * Receives form POST from index.php.
- * Validates upload → creates DB job → launches pipeline.py → redirects to progress.php
- */
-
-// Catch PHP's silent POST size overflow — must happen before session_start()
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST) && empty($_FILES)
     && isset($_SERVER['CONTENT_LENGTH']) && $_SERVER['CONTENT_LENGTH'] > 0) {
     session_start();
@@ -19,11 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST) && empty($_FILES)
 session_start();
 require_once __DIR__ . '/db.php';
 
-define('PIPELINE_DIR', __DIR__);   // pipeline.py lives in the same directory as run.php
+define('PIPELINE_DIR', __DIR__); 
 define('JOBS_DIR',     __DIR__ . '/jobs');
 define('PYTHON_BIN',   getenv('GEMGEN_PYTHON') ?: 'python3');
 
-// ── Validate genome upload ────────────────────────────────────────────────────
 if (empty($_FILES['genome_file']['tmp_name'])) {
     $_SESSION['errors'][] = 'Please upload a protein FASTA (.faa) genome file.';
     header('Location: index.php');
@@ -39,21 +31,15 @@ if (!in_array($ext, ['faa', 'fasta', 'fa'])) {
     exit;
 }
 
-// ── Fungi validation is handled entirely by pipeline.py (NCBI Taxonomy) ────────
-// The PHP pre-check has been removed — pipeline.py validates the organism
-// and writes a fungi_error status if non-fungal, which progress.php handles.
 $faa_tmp = $_FILES['genome_file']['tmp_name'];
 
-// ── Create job ────────────────────────────────────────────────────────────────
 $job_id  = uniqid('gemgen_', true);
 $job_dir = JOBS_DIR . '/' . $job_id;
 mkdir($job_dir, 0755, true);
 
-// Save genome file
 $genome_path = $job_dir . '/genome.faa';
 move_uploaded_file($faa_tmp, $genome_path);
 
-// Collect parameters
 $params = [
     'genome_filename' => $original_name,
     'organism'        => trim($_POST['organism']          ?? ''),
@@ -75,10 +61,8 @@ $params = [
     'submitted_at'    => date('c'),
 ];
 
-// Save params.json for pipeline
 file_put_contents($job_dir . '/params.json', json_encode($params, JSON_PRETTY_PRINT));
 
-// Write initial status.json
 file_put_contents($job_dir . '/status.json', json_encode([
     'job_id'        => $job_id,
     'overall'       => 'pending',
@@ -92,14 +76,12 @@ file_put_contents($job_dir . '/status.json', json_encode([
     ],
 ], JSON_PRETTY_PRINT));
 
-// ── Insert into MySQL ─────────────────────────────────────────────────────────
 try {
     db_create_job($job_id, session_id(), $params);
 } catch (Exception $e) {
     error_log("[GEMgen] MySQL insert failed for $job_id: " . $e->getMessage());
 }
 
-// ── Launch pipeline as background process ─────────────────────────────────────
 $log_path = $job_dir . '/pipeline.log';
 $cmd = sprintf(
     'cd %s && nohup %s pipeline/pipeline.py --job_id %s --genome %s --out_dir %s --organism %s > %s 2>&1 &',
@@ -113,7 +95,6 @@ $cmd = sprintf(
 );
 exec($cmd);
 
-// ── Store in session for history ──────────────────────────────────────────────
 if (!isset($_SESSION['jobs'])) $_SESSION['jobs'] = [];
 array_unshift($_SESSION['jobs'], $job_id);
 $_SESSION['jobs'] = array_slice($_SESSION['jobs'], 0, 30);
