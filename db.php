@@ -1,8 +1,4 @@
 <?php
-/**
- * db.php — GEMgen database layer
- * Credentials loaded from login.php (same pattern as JAHbio).
- */
 require_once __DIR__ . '/login.php';
 
 function db_connect(): PDO {
@@ -19,7 +15,6 @@ function db_connect(): PDO {
     return $pdo;
 }
 
-// ── Insert new job row ────────────────────────────────────────────────────────
 function db_create_job(string $job_id, string $session_id, array $p): void {
     $pdo = db_connect();
     $pdo->prepare("
@@ -56,7 +51,6 @@ function db_create_job(string $job_id, string $session_id, array $p): void {
     ]);
 }
 
-// ── Update job status ─────────────────────────────────────────────────────────
 function db_update_status(string $job_id, string $status, ?string $message = null): void {
     db_connect()->prepare("
         UPDATE jobs
@@ -65,12 +59,10 @@ function db_update_status(string $job_id, string $status, ?string $message = nul
     ")->execute([':status' => $status, ':msg' => $message, ':job_id' => $job_id]);
 }
 
-// ── Save completed pipeline results ──────────────────────────────────────────
 function db_save_results(string $job_id, array $r): void {
     $pdo  = db_connect();
     $meta = $r['bio_metadata'] ?? [];
 
-    // Update jobs row
     $pdo->prepare("
         UPDATE jobs SET
             status         = 'done',
@@ -89,7 +81,6 @@ function db_save_results(string $job_id, array $r): void {
         ':job_id'    => $job_id,
     ]);
 
-    // Insert bio_metadata row (replace if already exists)
     $pdo->prepare("
         REPLACE INTO bio_metadata
             (job_id, organism_type, maintenance_coeff, required_supplements, tax_id)
@@ -106,7 +97,6 @@ function db_save_results(string $job_id, array $r): void {
     ]);
 }
 
-// ── Get a single job (with bio_metadata joined) ───────────────────────────────
 function db_get_job(string $job_id): ?array {
     $stmt = db_connect()->prepare("
         SELECT j.*, b.maintenance_coeff, b.required_supplements AS supplements_csv
@@ -131,7 +121,6 @@ function db_get_job(string $job_id): ?array {
     return $row;
 }
 
-// ── Get multiple jobs by session (history page) ───────────────────────────────
 function db_get_jobs_by_session(string $session_id): array {
     $stmt = db_connect()->prepare("
         SELECT job_id, genome_filename, organism, status,
@@ -145,7 +134,6 @@ function db_get_jobs_by_session(string $session_id): array {
     return $stmt->fetchAll();
 }
 
-// ── Get example job ───────────────────────────────────────────────────────────
 function db_get_example_job(): ?array {
     $stmt = db_connect()->prepare("
         SELECT * FROM jobs WHERE is_example = 1 ORDER BY submitted_at DESC LIMIT 1
