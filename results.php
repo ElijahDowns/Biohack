@@ -5,7 +5,6 @@ require_once __DIR__ . '/db.php';
 $job_id  = preg_replace('/[^a-zA-Z0-9_\.]/', '', $_GET['job_id'] ?? '');
 $job_dir = __DIR__ . '/jobs/' . $job_id;
 
-// ── Load results — try DB first, fallback to file ─────────────────────────────
 $results = null;
 try {
     $row = db_get_job($job_id);
@@ -27,12 +26,10 @@ try {
     error_log("[GEMgen] DB read failed: " . $e->getMessage());
 }
 
-// File fallback
 if (!$results) {
     $results_file = $job_dir . '/results.json';
     if (file_exists($results_file)) {
         $results = json_decode(file_get_contents($results_file), true);
-        // Attach params separately if not embedded
         if (empty($results['params']) && file_exists($job_dir . '/params.json')) {
             $results['params'] = json_decode(file_get_contents($job_dir . '/params.json'), true);
         }
@@ -50,7 +47,6 @@ $params       = $results['params']       ?? [];
 $bio_metadata = $results['bio_metadata'] ?? [];
 $taxon        = $results['taxon_detected'] ?? ($params['organism'] ?? '—');
 
-// Label maps
 $carbon_labels = [
     'glucose'=>'Glucose','sucrose'=>'Sucrose','glycerol'=>'Glycerol','xylose'=>'Xylose','fructose'=>'Fructose',
     'corn_steep'=>'Corn steep liquor','wheat_bran'=>'Wheat bran hydrolysate','molasses'=>'Cane molasses',
@@ -66,13 +62,9 @@ $nitrogen_labels = [
 $carbon_label   = $carbon_labels[$params['carbon_source']   ?? ''] ?? ($params['carbon_source']   ?? '—');
 $nitrogen_label = $nitrogen_labels[$params['nitrogen_source'] ?? ''] ?? ($params['nitrogen_source'] ?? '—');
 
-// Pass data to JS — model_xml can be large, encode safely
-// We write it into a JS variable rather than inlining in HTML
 $bio_metadata_json = json_encode($bio_metadata, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT);
 $params_json       = json_encode($params,       JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT);
 
-// model_xml is written to a separate endpoint to avoid bloating the page
-// We serve it via model.php?job_id=... so JS can fetch it
 ?>
 <!DOCTYPE html>
 <html>
@@ -92,7 +84,6 @@ $params_json       = json_encode($params,       JSON_HEX_TAG | JSON_HEX_APOS | J
             <h1><span>GEM</span>gen</h1>
             <p>Genome-Scale Metabolic Model Generator</p>
         </div>
-        <!-- LOGO PLACEHOLDER -->
     </div>
 </div>
 
@@ -135,10 +126,8 @@ $params_json       = json_encode($params,       JSON_HEX_TAG | JSON_HEX_APOS | J
         </div>
     </div>
 
-    <!-- FBA status / warnings injected by JS -->
     <div id="fba-status-banner"></div>
 
-    <!-- Loading indicator -->
     <div id="fba-loading" class="infobox" style="text-align:center;">
         <strong>Running FBA...</strong> Loading SBML model and computing TRY metrics.
         <div style="margin-top:8px;font-size:0.8rem;color:var(--text-dim);">
@@ -146,7 +135,6 @@ $params_json       = json_encode($params,       JSON_HEX_TAG | JSON_HEX_APOS | J
         </div>
     </div>
 
-    <!-- Correction factors strip (hidden until FBA runs) -->
     <div class="correction-strip" id="correction-strip" style="display:none;">
         <div class="correction-item"><span class="cf-label">Temp factor</span><span class="cf-val" id="cf-temp">—</span></div>
         <div class="correction-item"><span class="cf-label">pH factor</span><span class="cf-val" id="cf-ph">—</span></div>
@@ -156,7 +144,6 @@ $params_json       = json_encode($params,       JSON_HEX_TAG | JSON_HEX_APOS | J
         <div class="correction-item correction-item--total"><span class="cf-label">Maintenance coeff.</span><span class="cf-val" id="cf-maintenance">—</span></div>
     </div>
 
-    <!-- TRY output (hidden until FBA runs) -->
     <div id="fba-results" style="display:none;">
 
         <h3>Predicted TRY Metrics</h3>
@@ -208,7 +195,6 @@ $params_json       = json_encode($params,       JSON_HEX_TAG | JSON_HEX_APOS | J
             </div>
         </div>
 
-        <!-- Supplement warning if required_supplements present -->
         <?php if (!empty($bio_metadata['required_supplements'])): ?>
         <div class="infobox" style="margin-top:16px;">
             <strong>&#9888; Supplement requirement:</strong>
@@ -221,7 +207,6 @@ $params_json       = json_encode($params,       JSON_HEX_TAG | JSON_HEX_APOS | J
 
     </div><!-- /#fba-results -->
 
-    <!-- Run parameters -->
     <h3>Run parameters</h3>
     <div class="summary-grid">
         <div class="summary-item"><span class="summary-key">Genome</span><span class="summary-val"><code><?= htmlspecialchars($params['genome_filename'] ?? '—') ?></code></span></div>
@@ -256,15 +241,9 @@ $params_json       = json_encode($params,       JSON_HEX_TAG | JSON_HEX_APOS | J
     </div>
 </div>
 
-<!-- ── FBA Libraries ── -->
-<!-- javascript-lp-solver: pure JS LP solver, no WASM needed -->
 <script src="js/lpsolver.js"></script>
-<!-- escher-fba SBML parser + FBA wrapper (uses lpsolver, exposes glpk shim) -->
 <script src="js/escher-fba.min.js"></script>
-<!-- Define renderFullReport BEFORE loading escher-fba.js -->
 <script>
-// escher-fba.js calls renderFullReport(results, optimum) at the end
-// We intercept it here and route to our renderResults function
 function renderFullReport(results, optimum) {
     console.log('[GEMgen] renderFullReport called — optimum:', optimum);
     var best = Array.isArray(optimum) && optimum.length > 0
@@ -272,7 +251,6 @@ function renderFullReport(results, optimum) {
             return (parseFloat(b.growthRate)||0) > (parseFloat(a.growthRate)||0) ? b : a;
           }, optimum[0])
         : (optimum || {});
-    // renderResults may not be defined yet — defer if needed
     if (typeof window.renderResults === 'function') {
         window.renderResults(best, window._bioMetadata || {});
     } else {
@@ -284,10 +262,8 @@ function renderFullReport(results, optimum) {
     }
 }
 </script>
-<!-- Biological corrections layer -->
 <script src="escher-fba.js"></script>
 <script>
-// All scripts loaded — signal ready
 window.glpk().then(function(solver) {
     window._glpkSolver = solver;
     console.log('[GEMgen] FBA libraries ready — solver:', solver.version);
@@ -300,10 +276,9 @@ window.glpk().then(function(solver) {
 
     var jobId       = <?= json_encode($job_id) ?>;
     var bioMetadata = <?= $bio_metadata_json ?>;
-    window._bioMetadata = bioMetadata; // expose for renderFullReport
+    window._bioMetadata = bioMetadata;
     var params      = <?= $params_json ?>;
 
-    // Build userInputs in the format expected by runScientificallyHardenedOptimization()
     function parseNum(s, def) { return parseFloat((s||'').replace(/[^\d.]/g,'')) || def; }
 
     var userInputs = {
@@ -335,7 +310,6 @@ window.glpk().then(function(solver) {
         } : null,
     };
 
-    // ── Wait for glpk ES module to be ready, then fetch model and run FBA ──────
     function runFBA() {
         fetch('model.php?job_id=' + encodeURIComponent(jobId))
             .then(function(r) {
@@ -346,8 +320,6 @@ window.glpk().then(function(solver) {
                 return runScientificallyHardenedOptimization(modelXml, userInputs, bioMetadata);
             })
             .then(function(optimum) {
-                // escher-fba.js calls renderFullReport() internally which calls renderResults()
-                // We don't need to call renderResults() here — it's already done
                 console.log('[GEMgen] runFBA promise resolved — renderFullReport already called');
             })
             .catch(function(err) {
@@ -356,7 +328,6 @@ window.glpk().then(function(solver) {
             });
     }
 
-    // Wait for glpk ES module to initialise before running FBA
     if (window._glpkSolver) {
         runFBA();
     } else {
@@ -365,7 +336,6 @@ window.glpk().then(function(solver) {
         });
     }
 
-    // ── Render results into DOM ──────────────────────────────────────────────
     window.renderResults = function(optimum, bio) {
         optimum = optimum || {};
         bio     = bio     || {};
@@ -373,7 +343,6 @@ window.glpk().then(function(solver) {
         document.getElementById('fba-results').style.display  = '';
         document.getElementById('correction-strip').style.display = '';
 
-        // Maintenance coefficient source
         var maint = bio.maintenance_coefficient != null
             ? bio.maintenance_coefficient + ' (BV-BRC)'
             : 'heuristic fallback';
@@ -381,11 +350,10 @@ window.glpk().then(function(solver) {
         document.getElementById('cf-maintenance').textContent = bio.maintenance_coefficient != null
             ? bio.maintenance_coefficient : '~0.05';
 
-        // TRY cards
         var mu   = parseFloat(optimum.growthRate)   || 0;
         var vol  = userInputs.volume;
         var hrs  = userInputs.hours;
-        var X0   = (userInputs.inoculumPct / 100) * 10;  // 10 g/L seed
+        var X0   = (userInputs.inoculumPct / 100) * 10;
         var titer = X0 * Math.exp(mu * hrs);
         var rate  = titer / hrs;
 
@@ -396,16 +364,13 @@ window.glpk().then(function(solver) {
         set('out-yield',        optimum.growthRate || '—');
         set('out-yield-range',  '');
 
-        // Status row
         set('out-mu',   (mu).toFixed(4) + ' h⁻¹');
         set('out-raw',  optimum.growthRate || '—');
         set('out-cn',   (optimum.cnRatio  || '—') + ' : 1');
-        set('out-o2',   '—');  // available in full results array if needed
+        set('out-o2',   '—');
 
-        // Correction factors (from optimum row)
-        // The original JS stores these per result row
         if (optimum.cnFactor)   set('cf-cn',  parseFloat(optimum.cnFactor).toFixed(3));
-        if (optimum.growthRate) set('cf-temp', '—');  // temp/pH factors in individual rows
+        if (optimum.growthRate) set('cf-temp', '—');
     }
 
     window.set = function(id, val) {
