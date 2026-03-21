@@ -244,83 +244,88 @@ def load_gem(taxon_id: int) -> str:
 
 
 def _minimal_sbml(taxon_id: int) -> str:
-    """
-    Minimal but valid SBML with a complete stoichiometric network.
-    Includes a carbon uptake reaction, a biomass reaction, and all
-    species properly defined — so the FBA LP is feasible.
-    """
+    """Full stoichiometric stub with glycolysis, OXPHOS, N and O2 constraints."""
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
       xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2"
       level="3" version="1" fbc:required="false">
   <model id="GEMgen_stub_{taxon_id}" name="GEMgen fungal stub (taxon {taxon_id})">
-
     <listOfCompartments>
-      <compartment id="e" name="extracellular" constant="true"/>
-      <compartment id="c" name="cytoplasm"     constant="true"/>
+      <compartment id="e" constant="true"/>
+      <compartment id="c" constant="true"/>
     </listOfCompartments>
-
     <listOfSpecies>
-      <species id="glc_e"    name="Glucose (extracellular)" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
-      <species id="glc_c"    name="Glucose (cytoplasm)"     compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
-      <species id="atp_c"    name="ATP"                     compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
-      <species id="biomass_c" name="Biomass"                compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="glc_e"     compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="glc_c"     compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="nh4_e"     compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="nh4_c"     compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="o2_e"      compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="o2_c"      compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="atp_c"     compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="nadh_c"    compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="co2_c"     compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="h2o_c"     compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="biomass_c" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
     </listOfSpecies>
-
     <listOfReactions>
-
-      <!-- Glucose uptake exchange (constrained by media) -->
-      <reaction id="EX_glc__D_e" name="Glucose exchange" reversible="true"
-                fbc:lowerFluxBound="-10" fbc:upperFluxBound="0">
-        <listOfReactants>
-          <speciesReference species="glc_e" stoichiometry="1" constant="true"/>
-        </listOfReactants>
+      <reaction id="EX_glc__D_e" reversible="true" fbc:lowerFluxBound="-10" fbc:upperFluxBound="0">
+        <listOfReactants><speciesReference species="glc_e" stoichiometry="1" constant="true"/></listOfReactants>
       </reaction>
-
-      <!-- Glucose transport -->
-      <reaction id="GLCt" name="Glucose transport" reversible="false"
-                fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
-        <listOfReactants>
-          <speciesReference species="glc_e" stoichiometry="1" constant="true"/>
-        </listOfReactants>
+      <reaction id="EX_nh4_e" reversible="true" fbc:lowerFluxBound="-10" fbc:upperFluxBound="0">
+        <listOfReactants><speciesReference species="nh4_e" stoichiometry="1" constant="true"/></listOfReactants>
+      </reaction>
+      <reaction id="EX_o2_e" reversible="true" fbc:lowerFluxBound="-20" fbc:upperFluxBound="0">
+        <listOfReactants><speciesReference species="o2_e" stoichiometry="1" constant="true"/></listOfReactants>
+      </reaction>
+      <reaction id="EX_co2_e" reversible="true" fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+        <listOfReactants><speciesReference species="co2_c" stoichiometry="1" constant="true"/></listOfReactants>
+      </reaction>
+      <reaction id="EX_biomass" reversible="false" fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+        <listOfReactants><speciesReference species="biomass_c" stoichiometry="1" constant="true"/></listOfReactants>
+      </reaction>
+      <reaction id="EX_h2o_e" reversible="true" fbc:lowerFluxBound="-1000" fbc:upperFluxBound="1000">
+        <listOfReactants><speciesReference species="h2o_c" stoichiometry="1" constant="true"/></listOfReactants>
+      </reaction>
+      <reaction id="GLCt" reversible="false" fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+        <listOfReactants><speciesReference species="glc_e" stoichiometry="1" constant="true"/></listOfReactants>
+        <listOfProducts><speciesReference species="glc_c" stoichiometry="1" constant="true"/></listOfProducts>
+      </reaction>
+      <reaction id="NH4t" reversible="false" fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+        <listOfReactants><speciesReference species="nh4_e" stoichiometry="1" constant="true"/></listOfReactants>
+        <listOfProducts><speciesReference species="nh4_c" stoichiometry="1" constant="true"/></listOfProducts>
+      </reaction>
+      <reaction id="O2t" reversible="false" fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+        <listOfReactants><speciesReference species="o2_e" stoichiometry="1" constant="true"/></listOfReactants>
+        <listOfProducts><speciesReference species="o2_c" stoichiometry="1" constant="true"/></listOfProducts>
+      </reaction>
+      <reaction id="GLYCOLYSIS" reversible="false" fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+        <listOfReactants><speciesReference species="glc_c" stoichiometry="1" constant="true"/></listOfReactants>
         <listOfProducts>
-          <speciesReference species="glc_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="atp_c"  stoichiometry="2"  constant="true"/>
+          <speciesReference species="nadh_c" stoichiometry="2"  constant="true"/>
+          <speciesReference species="co2_c"  stoichiometry="2"  constant="true"/>
         </listOfProducts>
       </reaction>
-
-      <!-- Simplified glycolysis: glucose -> ATP -->
-      <reaction id="GLYCOLYSIS" name="Glycolysis (simplified)" reversible="false"
-                fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+      <reaction id="OXPHOS" reversible="false" fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
         <listOfReactants>
-          <speciesReference species="glc_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="nadh_c" stoichiometry="1"   constant="true"/>
+          <speciesReference species="o2_c"   stoichiometry="0.5" constant="true"/>
         </listOfReactants>
         <listOfProducts>
-          <speciesReference species="atp_c" stoichiometry="2" constant="true"/>
+          <speciesReference species="atp_c"  stoichiometry="2.5" constant="true"/>
+          <speciesReference species="h2o_c"  stoichiometry="1"   constant="true"/>
         </listOfProducts>
       </reaction>
-
-      <!-- Biomass reaction (objective) -->
-      <reaction id="BIOMASS" name="Biomass" reversible="false"
-                fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+      <reaction id="BIOMASS" reversible="false" fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
         <listOfReactants>
-          <speciesReference species="atp_c"    stoichiometry="1" constant="true"/>
+          <speciesReference species="atp_c"  stoichiometry="10" constant="true"/>
+          <speciesReference species="nh4_c"  stoichiometry="1"  constant="true"/>
         </listOfReactants>
         <listOfProducts>
           <speciesReference species="biomass_c" stoichiometry="1" constant="true"/>
         </listOfProducts>
       </reaction>
-
-      <!-- Biomass sink (keeps model feasible) -->
-      <reaction id="EX_biomass" name="Biomass export" reversible="false"
-                fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
-        <listOfReactants>
-          <speciesReference species="biomass_c" stoichiometry="1" constant="true"/>
-        </listOfReactants>
-      </reaction>
-
     </listOfReactions>
-
-    <!-- Objective: maximise biomass -->
     <fbc:listOfObjectives fbc:activeObjective="obj1">
       <fbc:objective fbc:id="obj1" fbc:type="maximize">
         <fbc:listOfFluxObjectives>
@@ -328,12 +333,8 @@ def _minimal_sbml(taxon_id: int) -> str:
         </fbc:listOfFluxObjectives>
       </fbc:objective>
     </fbc:listOfObjectives>
-
   </model>
 </sbml>"""
-
-
-# ── 6. Main orchestrator ──────────────────────────────────────────────────────
 
 def model_orchestra(fasta_content: str, job_id: str, output_dir: str, organism_name_hint: str = "") -> dict:
     os.makedirs(output_dir, exist_ok=True)

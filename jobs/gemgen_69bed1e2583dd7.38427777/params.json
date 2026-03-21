@@ -1,0 +1,20 @@
+{
+    "genome_filename": "Blumeria_graminis.EF2.pep.all.fa",
+    "organism": "Blumeria graminis",
+    "carbon_source": "glucose",
+    "carbon_conc": 20,
+    "carbon_unit": "g\/L",
+    "nitrogen_source": "ammonium_sulfate",
+    "nitrogen_conc": 2,
+    "nitrogen_unit": "g\/L",
+    "ph": 6.5,
+    "temperature": "28 \u00b0C",
+    "rpm": "200 RPM",
+    "volume": "1 L",
+    "inoculum": 5,
+    "duration": 72,
+    "phosphate": "kh2po4",
+    "phosphate_conc": 1,
+    "phosphate_unit": "g\/L",
+    "submitted_at": "2026-03-21T17:14:10+00:00"
+}

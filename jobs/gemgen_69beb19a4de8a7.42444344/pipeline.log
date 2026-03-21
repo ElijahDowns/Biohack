@@ -1,0 +1,8 @@
+[INFO] [extract_organism] Header: >BLGH_07057-mRNA-1 pep supercontig:EF2:scaffold_1:17468:19945:-1 gene:BLGH_07057 transcript:BLGH_07057-mRNA-1 gene_bioty
+[WARNING] [extract_organism] Could not extract organism name from header
+[INFO] [ncbi_taxon_lookup] Searching NCBI for: 'Unknown'
+[INFO] [ncbi_taxon_lookup] taxon_id = 32644
+[INFO] [ncbi_taxon_lookup] Raw lineage text: 'unclassified entries; unclassified sequences'
+[INFO] [validate_fungi] Checking lineage: ['unclassified entries', 'unclassified sequences']
+[INFO] [validate_fungi] Looking for any of: ['Fungi', 'Ascomycota', 'Basidiomycota', 'Mucoromycota', 'Chytridiomycota', 'Microsporidia', 'Dikarya']
+{"status": "fungi_error", "job_id": "gemgen_69beb19a4de8a7.42444344", "error": "Non-fungal genome detected ('Unknown'). Lineage: unclassified entries > unclassified sequences. GEMgen only supports filamentous fungi."}

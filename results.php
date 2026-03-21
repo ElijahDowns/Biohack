@@ -257,39 +257,41 @@ $params_json       = json_encode($params,       JSON_HEX_TAG | JSON_HEX_APOS | J
 </div>
 
 <!-- ── FBA Libraries ── -->
-<!-- glpk.js v4 — plain browser script, exposes window.GLPK -->
-<script src="js/glpk.min.js"></script>
-<script>
-// glpk v4 — detect which global it exposes and normalise to async factory
-// escher-fba.js expects: const solver = await glpk()
-(function() {
-    var factory = window.glpk || window.GLPK || null;
-    if (!factory) {
-        console.error('glpk.js did not expose a known global (tried glpk, GLPK)');
-        return;
-    }
-    // If it's already a function returning a promise — use it directly
-    // If it's a plain object (solver) — wrap it
-    if (typeof factory === 'function') {
-        window.glpk = function() { return factory(); };
-    } else {
-        window.glpk = function() { return Promise.resolve(factory); };
-    }
-    console.log('[GEMgen] glpk loaded, type:', typeof factory);
-})();
-</script>
-<!-- escher-fba SBML parser + FBA wrapper -->
+<!-- javascript-lp-solver: pure JS LP solver, no WASM needed -->
+<script src="js/lpsolver.js"></script>
+<!-- escher-fba SBML parser + FBA wrapper (uses lpsolver, exposes glpk shim) -->
 <script src="js/escher-fba.min.js"></script>
+<!-- Define renderFullReport BEFORE loading escher-fba.js -->
+<script>
+// escher-fba.js calls renderFullReport(results, optimum) at the end
+// We intercept it here and route to our renderResults function
+function renderFullReport(results, optimum) {
+    console.log('[GEMgen] renderFullReport called — optimum:', optimum);
+    var best = Array.isArray(optimum) && optimum.length > 0
+        ? optimum.reduce(function(a, b) {
+            return (parseFloat(b.growthRate)||0) > (parseFloat(a.growthRate)||0) ? b : a;
+          }, optimum[0])
+        : (optimum || {});
+    // renderResults may not be defined yet — defer if needed
+    if (typeof window.renderResults === 'function') {
+        window.renderResults(best, window._bioMetadata || {});
+    } else {
+        setTimeout(function() {
+            if (typeof window.renderResults === 'function') {
+                window.renderResults(best, window._bioMetadata || {});
+            }
+        }, 100);
+    }
+}
+</script>
 <!-- Biological corrections layer -->
 <script src="escher-fba.js"></script>
 <script>
-// Signal ready — glpk is synchronously available at this point (v4)
+// All scripts loaded — signal ready
 window.glpk().then(function(solver) {
     window._glpkSolver = solver;
-    console.log('[GEMgen] glpk solver ready, version:', solver.version || 'unknown');
+    console.log('[GEMgen] FBA libraries ready — solver:', solver.version);
     document.dispatchEvent(new CustomEvent('glpk-ready'));
-}).catch(function(e) {
-    console.error('[GEMgen] glpk init failed:', e);
 });
 </script>
 
@@ -298,6 +300,7 @@ window.glpk().then(function(solver) {
 
     var jobId       = <?= json_encode($job_id) ?>;
     var bioMetadata = <?= $bio_metadata_json ?>;
+    window._bioMetadata = bioMetadata; // expose for renderFullReport
     var params      = <?= $params_json ?>;
 
     // Build userInputs in the format expected by runScientificallyHardenedOptimization()
@@ -343,7 +346,9 @@ window.glpk().then(function(solver) {
                 return runScientificallyHardenedOptimization(modelXml, userInputs, bioMetadata);
             })
             .then(function(optimum) {
-                renderResults(optimum, bioMetadata);
+                // escher-fba.js calls renderFullReport() internally which calls renderResults()
+                // We don't need to call renderResults() here — it's already done
+                console.log('[GEMgen] runFBA promise resolved — renderFullReport already called');
             })
             .catch(function(err) {
                 console.error('[GEMgen FBA error]', err);
@@ -361,7 +366,9 @@ window.glpk().then(function(solver) {
     }
 
     // ── Render results into DOM ──────────────────────────────────────────────
-    function renderResults(optimum, bio) {
+    window.renderResults = function(optimum, bio) {
+        optimum = optimum || {};
+        bio     = bio     || {};
         document.getElementById('fba-loading').style.display  = 'none';
         document.getElementById('fba-results').style.display  = '';
         document.getElementById('correction-strip').style.display = '';
@@ -401,12 +408,12 @@ window.glpk().then(function(solver) {
         if (optimum.growthRate) set('cf-temp', '—');  // temp/pH factors in individual rows
     }
 
-    function set(id, val) {
+    window.set = function(id, val) {
         var el = document.getElementById(id);
         if (el) el.textContent = val;
     }
 
-    function showError(msg) {
+    window.showError = function(msg) {
         document.getElementById('fba-loading').style.display = 'none';
         var banner = document.getElementById('fba-status-banner');
         banner.innerHTML = '<div class="error"><strong>&#10007; FBA error:</strong> ' + msg +

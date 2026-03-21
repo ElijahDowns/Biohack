@@ -295,7 +295,7 @@ async function runScientificallyHardenedOptimization(modelXml, userInputs, bioMe
     // appropriate, you can normalise here, e.g.: bioMetadata.maintenance_coefficient / 30
     const MAINTENANCE_COEFFICIENT =
         (bioMetadata.maintenance_coefficient != null)
-            ? bioMetadata.maintenance_coefficient
+            ? bioMetadata.maintenance_coefficient / 30
             : orgDefaults.maintenanceCoeff;
 
     // Log which source was used (helpful during integration debugging)

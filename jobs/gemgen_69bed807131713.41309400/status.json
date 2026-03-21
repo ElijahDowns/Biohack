@@ -1,0 +1,24 @@
+{
+  "job_id": "gemgen_69bed807131713.41309400",
+  "overall": "done",
+  "current_stage": "done",
+  "message": "Complete \u2014 Saccharomyces cerevisiae (taxon 4932)",
+  "stages": {
+    "taxon_detect": {
+      "status": "done",
+      "message": "Saccharomyces cerevisiae"
+    },
+    "validate": {
+      "status": "done",
+      "message": "Fungal \u2713"
+    },
+    "load_gem": {
+      "status": "done",
+      "message": "Model loaded (6111 chars)"
+    },
+    "done": {
+      "status": "done",
+      "message": ""
+    }
+  }
+}
