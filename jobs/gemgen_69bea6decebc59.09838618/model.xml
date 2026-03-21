@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2"
+      level="3" version="1" fbc:required="false">
+  <model id="GEMgen_stub_34373" name="GEMgen fungal stub (taxon 34373)">
+
+    <listOfCompartments>
+      <compartment id="e" name="extracellular" constant="true"/>
+      <compartment id="c" name="cytoplasm"     constant="true"/>
+    </listOfCompartments>
+
+    <listOfSpecies>
+      <species id="glc_e"    name="Glucose (extracellular)" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="glc_c"    name="Glucose (cytoplasm)"     compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="atp_c"    name="ATP"                     compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="biomass_c" name="Biomass"                compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+
+    <listOfReactions>
+
+      <!-- Glucose uptake exchange (constrained by media) -->
+      <reaction id="EX_glc__D_e" name="Glucose exchange" reversible="true"
+                fbc:lowerFluxBound="-10" fbc:upperFluxBound="0">
+        <listOfReactants>
+          <speciesReference species="glc_e" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+
+      <!-- Glucose transport -->
+      <reaction id="GLCt" name="Glucose transport" reversible="false"
+                fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+        <listOfReactants>
+          <speciesReference species="glc_e" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="glc_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+
+      <!-- Simplified glycolysis: glucose -> ATP -->
+      <reaction id="GLYCOLYSIS" name="Glycolysis (simplified)" reversible="false"
+                fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+        <listOfReactants>
+          <speciesReference species="glc_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="atp_c" stoichiometry="2" constant="true"/>
+        </listOfProducts>
+      </reaction>
+
+      <!-- Biomass reaction (objective) -->
+      <reaction id="BIOMASS" name="Biomass" reversible="false"
+                fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+        <listOfReactants>
+          <speciesReference species="atp_c"    stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="biomass_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+
+      <!-- Biomass sink (keeps model feasible) -->
+      <reaction id="EX_biomass" name="Biomass export" reversible="false"
+                fbc:lowerFluxBound="0" fbc:upperFluxBound="1000">
+        <listOfReactants>
+          <speciesReference species="biomass_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+
+    </listOfReactions>
+
+    <!-- Objective: maximise biomass -->
+    <fbc:listOfObjectives fbc:activeObjective="obj1">
+      <fbc:objective fbc:id="obj1" fbc:type="maximize">
+        <fbc:listOfFluxObjectives>
+          <fbc:fluxObjective fbc:reaction="BIOMASS" fbc:coefficient="1"/>
+        </fbc:listOfFluxObjectives>
+      </fbc:objective>
+    </fbc:listOfObjectives>
+
+  </model>
+</sbml>

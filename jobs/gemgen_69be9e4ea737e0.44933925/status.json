@@ -1,0 +1,24 @@
+{
+  "job_id": "gemgen_69be9e4ea737e0.44933925",
+  "overall": "done",
+  "current_stage": "done",
+  "message": "Complete \u2014 Blumeria graminis (taxon 34373)",
+  "stages": {
+    "taxon_detect": {
+      "status": "done",
+      "message": "Blumeria graminis"
+    },
+    "validate": {
+      "status": "done",
+      "message": "Fungal \u2713"
+    },
+    "load_gem": {
+      "status": "done",
+      "message": "Model loaded (601 chars)"
+    },
+    "done": {
+      "status": "done",
+      "message": ""
+    }
+  }
+}

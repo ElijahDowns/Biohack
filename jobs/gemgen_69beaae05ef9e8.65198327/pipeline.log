@@ -1,0 +1,4 @@
+[INFO] [model_orchestra] Using form-provided organism name: Blumeria graminis
+[INFO] [ncbi_taxon_lookup] Searching NCBI for: 'Blumeria graminis'
+[INFO] [ncbi_taxon_lookup] taxon_id = 34373
+{"status": "error", "job_id": "gemgen_69beaae05ef9e8.65198327", "error": "name 'time' is not defined"}

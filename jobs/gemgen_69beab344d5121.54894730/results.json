@@ -1,0 +1,25 @@
+{
+  "status": "success",
+  "job_id": "gemgen_69beab344d5121.54894730",
+  "model_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<sbml xmlns=\"http://www.sbml.org/sbml/level3/version1/core\"\n      xmlns:fbc=\"http://www.sbml.org/sbml/level3/version1/fbc/version2\"\n      level=\"3\" version=\"1\" fbc:required=\"false\">\n  <model id=\"GEMgen_stub_34373\" name=\"GEMgen fungal stub (taxon 34373)\">\n\n    <listOfCompartments>\n      <compartment id=\"e\" name=\"extracellular\" constant=\"true\"/>\n      <compartment id=\"c\" name=\"cytoplasm\"     constant=\"true\"/>\n    </listOfCompartments>\n\n    <listOfSpecies>\n      <species id=\"glc_e\"    name=\"Glucose (extracellular)\" compartment=\"e\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>\n      <species id=\"glc_c\"    name=\"Glucose (cytoplasm)\"     compartment=\"c\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>\n      <species id=\"atp_c\"    name=\"ATP\"                     compartment=\"c\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>\n      <species id=\"biomass_c\" name=\"Biomass\"                compartment=\"c\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>\n    </listOfSpecies>\n\n    <listOfReactions>\n\n      <!-- Glucose uptake exchange (constrained by media) -->\n      <reaction id=\"EX_glc__D_e\" name=\"Glucose exchange\" reversible=\"true\"\n                fbc:lowerFluxBound=\"-10\" fbc:upperFluxBound=\"0\">\n        <listOfReactants>\n          <speciesReference species=\"glc_e\" stoichiometry=\"1\" constant=\"true\"/>\n        </listOfReactants>\n      </reaction>\n\n      <!-- Glucose transport -->\n      <reaction id=\"GLCt\" name=\"Glucose transport\" reversible=\"false\"\n                fbc:lowerFluxBound=\"0\" fbc:upperFluxBound=\"1000\">\n        <listOfReactants>\n          <speciesReference species=\"glc_e\" stoichiometry=\"1\" constant=\"true\"/>\n        </listOfReactants>\n        <listOfProducts>\n          <speciesReference species=\"glc_c\" stoichiometry=\"1\" constant=\"true\"/>\n        </listOfProducts>\n      </reaction>\n\n      <!-- Simplified glycolysis: glucose -> ATP -->\n      <reaction id=\"GLYCOLYSIS\" name=\"Glycolysis (simplified)\" reversible=\"false\"\n                fbc:lowerFluxBound=\"0\" fbc:upperFluxBound=\"1000\">\n        <listOfReactants>\n          <speciesReference species=\"glc_c\" stoichiometry=\"1\" constant=\"true\"/>\n        </listOfReactants>\n        <listOfProducts>\n          <speciesReference species=\"atp_c\" stoichiometry=\"2\" constant=\"true\"/>\n        </listOfProducts>\n      </reaction>\n\n      <!-- Biomass reaction (objective) -->\n      <reaction id=\"BIOMASS\" name=\"Biomass\" reversible=\"false\"\n                fbc:lowerFluxBound=\"0\" fbc:upperFluxBound=\"1000\">\n        <listOfReactants>\n          <speciesReference species=\"atp_c\"    stoichiometry=\"1\" constant=\"true\"/>\n        </listOfReactants>\n        <listOfProducts>\n          <speciesReference species=\"biomass_c\" stoichiometry=\"1\" constant=\"true\"/>\n        </listOfProducts>\n      </reaction>\n\n      <!-- Biomass sink (keeps model feasible) -->\n      <reaction id=\"EX_biomass\" name=\"Biomass export\" reversible=\"false\"\n                fbc:lowerFluxBound=\"0\" fbc:upperFluxBound=\"1000\">\n        <listOfReactants>\n          <speciesReference species=\"biomass_c\" stoichiometry=\"1\" constant=\"true\"/>\n        </listOfReactants>\n      </reaction>\n\n    </listOfReactions>\n\n    <!-- Objective: maximise biomass -->\n    <fbc:listOfObjectives fbc:activeObjective=\"obj1\">\n      <fbc:objective fbc:id=\"obj1\" fbc:type=\"maximize\">\n        <fbc:listOfFluxObjectives>\n          <fbc:fluxObjective fbc:reaction=\"BIOMASS\" fbc:coefficient=\"1\"/>\n        </fbc:listOfFluxObjectives>\n      </fbc:objective>\n    </fbc:listOfObjectives>\n\n  </model>\n</sbml>",
+  "model_xml_path": "/localdisk/home/s2837201/public_html/biohack/jobs/gemgen_69beab344d5121.54894730/model.xml",
+  "bio_metadata": {
+    "organism_type": "Fungal",
+    "required_supplements": [
+      "Biotin",
+      "Thiamine"
+    ],
+    "maintenance_coefficient": 1.5,
+    "tax_id": 34373,
+    "subclass": "Ascomycota"
+  },
+  "taxon_detected": "Blumeria graminis",
+  "taxon_id": 34373,
+  "lineage": [
+    "sordariomyceta",
+    "Leotiomycetes",
+    "Erysiphales",
+    "Erysiphaceae",
+    "Blumeria"
+  ]
+}

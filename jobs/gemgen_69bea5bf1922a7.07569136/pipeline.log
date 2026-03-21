@@ -1,0 +1,5 @@
+[INFO] [model_orchestra] Using form-provided organism name: Blumeria graminis
+[INFO] [ncbi_taxon_lookup] Searching NCBI for: 'Blumeria graminis'
+[INFO] [ncbi_taxon_lookup] taxon_id = 34373
+[ERROR] [ncbi_taxon_lookup] efetch failed: HTTP Error 429: Too Many Requests
+{"status": "fungi_error", "job_id": "gemgen_69bea5bf1922a7.07569136", "error": "Non-fungal genome detected ('Blumeria graminis'). Lineage: unknown. GEMgen only supports filamentous fungi."}

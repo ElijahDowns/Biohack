@@ -1,0 +1,8 @@
+[INFO] [model_orchestra] Using form-provided organism name: Blumeria graminis
+[INFO] [ncbi_taxon_lookup] Searching NCBI for: 'Blumeria graminis'
+[INFO] [ncbi_taxon_lookup] taxon_id = 34373
+[INFO] [ncbi_taxon_lookup] Lineage: cellular organisms; Eukaryota; Opisthokonta; Fungi; Dikarya; Ascomycota; sacchar...
+[INFO] [validate_fungi] ✓ Fungal confirmed: Blumeria graminis
+[WARNING] [load_gem] No GEM available — returning minimal stub SBML
+[INFO] [model_orchestra] ✓ Job gemgen_69be9e4ea737e0.44933925 complete — Blumeria graminis
+{"status": "success", "job_id": "gemgen_69be9e4ea737e0.44933925", "model_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<sbml xmlns=\"http://www.sbml.org/sbml/level3/version1/core\"\n      xmlns:fbc=\"http://www.sbml.org/sbml/level3/version1/fbc/version2\"\n      level=\"3\" version=\"1\">\n  <model id=\"GEMgen_stub_34373\" name=\"GEMgen stub (no model available)\">\n    <listOfReactions>\n      <reaction id=\"BIOMASS\" name=\"Biomass\" reversible=\"false\"\n                fbc:lowerFluxBound=\"0\" fbc:upperFluxBound=\"0.1\">\n        <listOfProducts>\n          <speciesReference species=\"biomass_c\" stoichiometry=\"1\"/>\n        </listOfProducts>\n      </reaction>\n    </listOfReactions>\n  </model>\n</sbml>", "model_xml_path": "/localdisk/home/s2837201/public_html/biohack/jobs/gemgen_69be9e4ea737e0.44933925/model.xml", "bio_metadata": {"organism_type": "Fungal", "required_supplements": ["Biotin", "Thiamine"], "maintenance_coefficient": 1.5, "tax_id": 34373, "subclass": "Ascomycota"}, "taxon_detected": "Blumeria graminis", "taxon_id": 34373, "lineage": ["sordariomyceta", "Leotiomycetes", "Erysiphales", "Erysiphaceae", "Blumeria"]}

@@ -1,0 +1,6 @@
+{
+  "job_id": "gemgen_69be9923cfd021.68719497",
+  "overall": "error",
+  "current_stage": "error",
+  "message": "Non-fungal genome detected ('BLGH 07057'). GEMgen is designed for filamentous fungi. Please upload a fungal genome FASTA file."
+}

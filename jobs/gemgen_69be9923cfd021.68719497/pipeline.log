@@ -1,0 +1,4 @@
+[INFO] [taxon_detect] Querying BV-BRC for: 'BLGH 07057'
+[ERROR] [taxon_detect] Unexpected error: URL can't contain control characters. '/taxonomy/?eq(scientific_name,BLGH 07057)&select(taxon_id,lineage_names)&limit(1)' (found at least ' ')
+[ERROR] [model_orchestra] Fungi validation failed: Non-fungal genome detected ('BLGH 07057'). GEMgen is designed for filamentous fungi. Please upload a fungal genome FASTA file.
+{"status": "fungi_error", "job_id": "gemgen_69be9923cfd021.68719497", "error": "Non-fungal genome detected ('BLGH 07057'). GEMgen is designed for filamentous fungi. Please upload a fungal genome FASTA file."}

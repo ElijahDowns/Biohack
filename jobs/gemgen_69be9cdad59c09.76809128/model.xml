@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2"
+      level="3" version="1">
+  <model id="GEMgen_stub_34373" name="GEMgen stub (no model available)">
+    <listOfReactions>
+      <reaction id="BIOMASS" name="Biomass" reversible="false"
+                fbc:lowerFluxBound="0" fbc:upperFluxBound="0.1">
+        <listOfProducts>
+          <speciesReference species="biomass_c" stoichiometry="1"/>
+        </listOfProducts>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>
