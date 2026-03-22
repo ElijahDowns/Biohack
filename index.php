@@ -12,18 +12,15 @@ session_start();
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
     <div class="container header-inner">
         <div class="logo-block">
             <h1><span>Fun</span>Gem</h1>
             <p>Genome-Scale Metabolic Model Generator</p>
         </div>
-        <!-- LOGO PLACEHOLDER: replace with <img src="images/logo.png" alt="GEMgen logo" class="logo-icon"> -->
     </div>
 </div>
 
-<!-- NAV -->
 <div class="menu">
     <div class="container">
         <a href="index.php" class="active">Home</a>
@@ -31,7 +28,6 @@ session_start();
     </div>
 </div>
 
-<!-- MAIN -->
 <div class="container">
 <div class="content">
 
@@ -57,7 +53,6 @@ if (isset($_GET['fungi_error'])) {
     Any <a href="feedback.php">feedback</a> is greatly appreciated.
 </p>
 
-<!-- pipeline strip -->
 <div class="pipeline-strip">
     <div class="pipeline-strip-step">
         <span class="pipeline-strip-num">1</span>
@@ -90,7 +85,6 @@ if (isset($_GET['fungi_error'])) {
 <form action="run.php" method="post" enctype="multipart/form-data" novalidate>
 <div class="form-panel">
 
-    <!-- ── GENOME ── -->
     <span class="field-label">Genome file <span class="field-fmt">(.faa / .fasta)</span></span>
     <input type="file" name="genome_file" accept=".faa,.fasta,.fa"/>
     <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:0.85rem;color:var(--text-dim);cursor:pointer;">
@@ -102,7 +96,6 @@ if (isset($_GET['fungi_error'])) {
         <input type="text" name="organism" value="Blumeria graminis" placeholder="e.g. Fusarium venenatum, proprietary strain A"/>
     </div>
 
-    <!-- ── SUBSTRATE / MEDIA ── -->
     <div class="section-label">Substrate Composition</div>
 
     <div class="two-col-fields">
@@ -183,7 +176,6 @@ if (isset($_GET['fungi_error'])) {
         <span class="cn-note">&mdash; typical range for filamentous fungi: 10:1 to 30:1</span>
     </div>
 
-    <!-- ── BIOREACTOR ── -->
     <div class="section-label">Bioreactor Conditions</div>
 
     <div class="field-row-4">
@@ -256,7 +248,6 @@ if (isset($_GET['fungi_error'])) {
 
     </div><!-- /.field-row-4 -->
 
-    <!-- ── ADVANCED ── -->
     <details class="adv-section">
         <summary>Advanced options</summary>
         <div class="adv-inner">
@@ -358,7 +349,6 @@ if (isset($_SESSION['jobs']) && !empty($_SESSION['jobs'])) {
 </div><!-- /.content -->
 </div><!-- /.container -->
 
-<!-- FOOTER -->
 <div class="footer">
     <div class="container">
         <p>FunGem &mdash; Genome-Scale Metabolic Model Generator &mdash; Pacifico Biolabs GmbH &times; BioHack Challenge 6</p>
@@ -366,7 +356,6 @@ if (isset($_SESSION['jobs']) && !empty($_SESSION['jobs'])) {
 </div>
 
 <script>
-// Client-side validation (replaces browser validation disabled by novalidate)
 document.querySelector('form').addEventListener('submit', function(e) {
     var useExample = document.querySelector('[name="use_example_genome"]');
     if (useExample && useExample.checked) return; // skip file validation
@@ -378,7 +367,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
     }
 });
 
-// Live C:N ratio display (rough molar approximation)
 (function() {
     var cConc = document.querySelector('[name="carbon_conc"]');
     var nConc = document.querySelector('[name="nitrogen_conc"]');
