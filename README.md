@@ -25,6 +25,7 @@ The five corrections applied after FBA are where the engineering realism comes i
 5. Maintenance energy coefficient subtraction
 
 Highlights
+\\
 FBA runs entirely client-side — no WASM, no server round-trip for computation
 Supports industrial feedstocks: molasses, corn steep liquor, wheat bran, cheese whey, and more
 Genome-driven predictions work for novel organisms and untested media combinations
