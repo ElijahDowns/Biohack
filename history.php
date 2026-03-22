@@ -5,7 +5,7 @@ require_once __DIR__ . '/db.php';
 <!DOCTYPE html>
 <html>
 <head>
-    <title>GEMgen — My Results</title>
+    <title>FunGem — My Results</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,19 +16,16 @@ require_once __DIR__ . '/db.php';
 <div class="header">
     <div class="container header-inner">
         <div class="logo-block">
-            <h1><span>GEM</span>gen</h1>
+            <h1><span>Fun</span>Gem</h1>
             <p>Genome-Scale Metabolic Model Generator</p>
         </div>
+        <!-- LOGO PLACEHOLDER -->
     </div>
 </div>
 <div class="menu">
     <div class="container">
         <a href="index.php">Home</a>
-        <a href="example.php">Example Dataset</a>
         <a href="history.php" class="active">My Results</a>
-        <a href="about.php">About</a>
-        <a href="help.php">Help</a>
-        <a href="feedback.php">Feedback</a>
     </div>
 </div>
 <div class="container"><div class="content">
@@ -101,7 +98,7 @@ if (empty($jobs)):
 </div></div>
 <div class="footer">
     <div class="container">
-        <p>GEMgen &mdash; Pacifico Biolabs GmbH &times; BioHack Challenge 6</p>
+        <p>FunGem &mdash; Pacifico Biolabs GmbH &times; BioHack Challenge 6</p>
     </div>
 </div>
 </body>

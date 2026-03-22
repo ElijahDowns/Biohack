@@ -3,7 +3,7 @@ session_start();
 ?>
 <html>
 <head>
-    <title>GEMgen — Genome-Scale Metabolic Model Generator</title>
+    <title>FunGem — Genome-Scale Metabolic Model Generator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,26 +12,26 @@ session_start();
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
     <div class="container header-inner">
         <div class="logo-block">
-            <h1><span>GEM</span>gen</h1>
-            <p>Genome-Scale Metabolic Model Generator &mdash; submerged fermentation optimisation for filamentous fungi</p>
+            <h1><span>Fun</span>Gem</h1>
+            <p>Genome-Scale Metabolic Model Generator</p>
         </div>
+        <!-- LOGO PLACEHOLDER: replace with <img src="images/logo.png" alt="GEMgen logo" class="logo-icon"> -->
     </div>
 </div>
 
+<!-- NAV -->
 <div class="menu">
     <div class="container">
         <a href="index.php" class="active">Home</a>
-        <a href="example.php">Example Dataset</a>
         <a href="history.php">My Results</a>
-        <a href="about.php">About</a>
-        <a href="help.php">Help</a>
-        <a href="feedback.php">Feedback</a>
     </div>
 </div>
 
+<!-- MAIN -->
 <div class="container">
 <div class="content">
 
@@ -45,13 +45,13 @@ if (!empty($_SESSION['errors'])) {
 if (isset($_GET['fungi_error'])) {
     $msg = htmlspecialchars($_GET['msg'] ?? 'Non-fungal genome detected.');
     echo '<div class="error"><strong>&#9888; Non-fungal genome detected:</strong> ' . $msg .
-         ' GEMgen only supports filamentous fungi. Please upload a fungal protein FASTA.</div>';
+         ' FunGem only supports filamentous fungi. Please upload a fungal protein FASTA.</div>';
 }
 ?>
 
-<h2>Welcome to <span class="accent">GEM</span>gen</h2>
+<h2>Welcome to <span class="accent">Fun</span>Gem</h2>
 <p>
-    GEMgen predicts TRY metrics (Titer, Rate, and Yield) for filamentous fungi in submerged fermentation,
+    FunGem predicts TRY metrics — Titer, Rate, and Yield — for filamentous fungi in submerged fermentation,
     directly from your genome and bioreactor conditions. Upload a fungal genome, define your substrate
     and reactor parameters, and get an instant in-silico prediction to focus your wet lab effort.
     Any <a href="feedback.php">feedback</a> is greatly appreciated.
@@ -90,18 +90,19 @@ if (isset($_GET['fungi_error'])) {
 <form action="run.php" method="post" enctype="multipart/form-data" novalidate>
 <div class="form-panel">
 
-    <div class="section-label">Genome</div>
+    <!-- ── GENOME ── -->
+    <span class="field-label">Genome file <span class="field-fmt">(.faa / .fasta)</span></span>
+    <input type="file" name="genome_file" accept=".faa,.fasta,.fa"/>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:0.85rem;color:var(--text-dim);cursor:pointer;">
+    <input type="checkbox" name="use_example_genome" value="1" checked/> Use example genome (<em>Blumeria graminis</em> — demo)
+    </label>
 
     <div class="field-group">
-        <span class="field-label">Genome file <span class="field-fmt">(.faa / .fasta)</span></span>
-        <input type="file" name="genome_file" accept=".faa,.fasta,.fa"/>
+        <span class="field-label">Organism name <span class="field-fmt"></span></span>
+        <input type="text" name="organism" value="Blumeria graminis" placeholder="e.g. Fusarium venenatum, proprietary strain A"/>
     </div>
 
-    <div class="field-group">
-        <span class="field-label">Organism name <span class="field-fmt">(optional)</span></span>
-        <input type="text" name="organism" placeholder="e.g. Fusarium venenatum, proprietary strain A"/>
-    </div>
-
+    <!-- ── SUBSTRATE / MEDIA ── -->
     <div class="section-label">Substrate Composition</div>
 
     <div class="two-col-fields">
@@ -182,6 +183,7 @@ if (isset($_GET['fungi_error'])) {
         <span class="cn-note">&mdash; typical range for filamentous fungi: 10:1 to 30:1</span>
     </div>
 
+    <!-- ── BIOREACTOR ── -->
     <div class="section-label">Bioreactor Conditions</div>
 
     <div class="field-row-4">
@@ -254,6 +256,7 @@ if (isset($_GET['fungi_error'])) {
 
     </div><!-- /.field-row-4 -->
 
+    <!-- ── ADVANCED ── -->
     <details class="adv-section">
         <summary>Advanced options</summary>
         <div class="adv-inner">
@@ -328,8 +331,8 @@ if (isset($_GET['fungi_error'])) {
 
 <div class="infobox">
     <strong>Assumptions:</strong> submerged liquid fermentation; no oxygen limitation (fully aerated);
-    no solid-state or moisture-dependent processes. GEM reconstruction is performed by BV-BRC
-    ModelReconstruction and typically takes 5–30 minutes. Predictions are model-based estimates —
+    no solid-state or moisture-dependent processes. GEM reconstruction is performed by simplified locally coded scripts (BV-BRC
+    ModelReconstruction will be used in future iterations - on private servers). Predictions are model-based estimates —
     experimental validation is always recommended.
 </div>
 
@@ -355,35 +358,27 @@ if (isset($_SESSION['jobs']) && !empty($_SESSION['jobs'])) {
 </div><!-- /.content -->
 </div><!-- /.container -->
 
+<!-- FOOTER -->
 <div class="footer">
     <div class="container">
-        <p>GEMgen &mdash; Genome-Scale Metabolic Model Generator &mdash; Pacifico Biolabs GmbH &times; BioHack Challenge 6</p>
-        <p style="margin-top:4px;">
-            <a href="credits.php">Statement of Credits</a> &nbsp;|&nbsp;
-            <a href="about.php">About</a> &nbsp;|&nbsp;
-            <a href="feedback.php">Feedback</a>
-        </p>
+        <p>FunGem &mdash; Genome-Scale Metabolic Model Generator &mdash; Pacifico Biolabs GmbH &times; BioHack Challenge 6</p>
     </div>
 </div>
 
 <script>
+// Client-side validation (replaces browser validation disabled by novalidate)
 document.querySelector('form').addEventListener('submit', function(e) {
+    var useExample = document.querySelector('[name="use_example_genome"]');
+    if (useExample && useExample.checked) return; // skip file validation
     var fileInput = document.querySelector('[name="genome_file"]');
     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
         e.preventDefault();
         alert('Please select a protein FASTA file (.faa or .fasta) before submitting.');
         fileInput.focus();
-        return;
-    }
-    var fname = fileInput.files[0].name.toLowerCase();
-    if (!fname.endsWith('.faa') && !fname.endsWith('.fasta') && !fname.endsWith('.fa')) {
-        e.preventDefault();
-        alert('Invalid file type. Please upload a .faa or .fasta protein FASTA file.');
-        fileInput.focus();
-        return;
     }
 });
 
+// Live C:N ratio display (rough molar approximation)
 (function() {
     var cConc = document.querySelector('[name="carbon_conc"]');
     var nConc = document.querySelector('[name="nitrogen_conc"]');

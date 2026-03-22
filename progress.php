@@ -5,11 +5,16 @@ require_once __DIR__ . '/db.php';
 $job_id  = preg_replace('/[^a-zA-Z0-9_\.]/', '', $_GET['job_id'] ?? '');
 $job_dir = __DIR__ . '/jobs/' . $job_id;
 
+// ── AJAX poll endpoint ────────────────────────────────────────────────────────
 if (isset($_GET['poll'])) {
     header('Content-Type: application/json');
+
+    // Read status.json written by pipeline.py
     $status_file = $job_dir . '/status.json';
     if (file_exists($status_file)) {
         $status = json_decode(file_get_contents($status_file), true);
+
+        // On done/error: sync MySQL
         $overall = $status['overall'] ?? 'pending';
         if (in_array($overall, ['done', 'error', 'fungi_error'])) {
             try {
@@ -32,6 +37,7 @@ if (isset($_GET['poll'])) {
     exit;
 }
 
+// ── Load params ───────────────────────────────────────────────────────────────
 $params = [];
 $params_file = $job_dir . '/params.json';
 if (file_exists($params_file)) {
@@ -41,7 +47,7 @@ if (file_exists($params_file)) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>GEMgen — Pipeline Running</title>
+    <title>FunGem — Pipeline Running</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,20 +59,17 @@ if (file_exists($params_file)) {
 <div class="header">
     <div class="container header-inner">
         <div class="logo-block">
-            <h1><span>GEM</span>gen</h1>
+            <h1><span>Fun</span>Gem</h1>
             <p>Genome-Scale Metabolic Model Generator</p>
         </div>
+        <!-- LOGO PLACEHOLDER -->
     </div>
 </div>
 
 <div class="menu">
     <div class="container">
         <a href="index.php">Home</a>
-        <a href="example.php">Example Dataset</a>
         <a href="history.php">My Results</a>
-        <a href="about.php">About</a>
-        <a href="help.php">Help</a>
-        <a href="feedback.php">Feedback</a>
     </div>
 </div>
 
@@ -85,6 +88,8 @@ if (file_exists($params_file)) {
     </div>
 
     <div class="progress-layout">
+
+        <!-- Stage tracker -->
         <div class="stage-tracker">
 
             <?php
@@ -112,7 +117,10 @@ if (file_exists($params_file)) {
             <?php endforeach; ?>
 
         </div><!-- /.stage-tracker -->
+
+        <!-- Sidebar -->
         <div class="progress-sidebar">
+
             <div class="progress-status-card">
                 <div class="progress-status-dot progress-status-dot--pending" id="status-dot"></div>
                 <div>
