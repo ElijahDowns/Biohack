@@ -1,22 +1,4 @@
 #!/usr/bin/env python3
-"""
-pipeline.py
-===========
-GEMgen pipeline — NCBI-based taxon detection + pre-built GEM fallback.
-
-BV-BRC is blocked on this server. We use NCBI Taxonomy API instead for:
-  - Taxon detection from FASTA header
-  - Fungi validation (checks lineage includes 'Fungi')
-
-GEM reconstruction: since BV-BRC and CarveMe are unavailable, we use a
-pre-built reference GEM stored at pipeline/models/<taxon_id>.xml or
-pipeline/models/default_fungi.xml as fallback.
-
-Flow:
-  FASTA header → NCBI taxon lookup → validate Fungi
-  → load pre-built GEM → write results.json
-"""
-
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -43,43 +25,28 @@ MODELS_DIR   = os.path.join(os.path.dirname(__file__), "models")
 DEFAULT_GEM  = os.path.join(MODELS_DIR, "default_fungi.xml")
 
 
-# ── 1. Extract organism name from FASTA header ────────────────────────────────
-
 def extract_organism(fasta_content: str) -> str:
-    """
-    Try multiple header patterns to extract a scientific name.
 
-    Handles formats like:
-      >BLGH_07057 pep ... [Blumeria graminis f. sp. tritici]
-      >XP_001234.1 hypothetical protein [Aspergillus niger]
-      >Pleurotus_ostreatus_PC15 ...
-      >gene1 organism=Fusarium_venenatum ...
-    """
     first_header = fasta_content.split('\n')[0]
     log.info(f"[extract_organism] Header: {first_header[:120]}")
-
-    # Pattern 1: [Organism name] at end of header
     m = re.search(r'\[([A-Z][a-z]+\s+[a-z]+[^\]]*)\]', first_header)
     if m:
         name = m.group(1).strip()
         log.info(f"[extract_organism] Found in brackets: {name}")
         return name
 
-    # Pattern 2: organism=Name in header
     m = re.search(r'organism[=\s]+([A-Z][a-z]+[\s_][a-z]+)', first_header)
     if m:
         name = m.group(1).replace('_', ' ').strip()
         log.info(f"[extract_organism] Found organism= tag: {name}")
         return name
 
-    # Pattern 3: First two capitalised words after >ID (genus species)
     m = re.search(r'>\S+\s+([A-Z][a-z]+\s+[a-z]+)', first_header)
     if m:
         name = m.group(1).strip()
         log.info(f"[extract_organism] Found genus species after ID: {name}")
         return name
 
-    # Pattern 4: Underscore-separated genus_species in the ID itself
     m = re.search(r'>([A-Z][a-z]+)_([a-z]+)', first_header)
     if m:
         name = f"{m.group(1)} {m.group(2)}"
@@ -90,16 +57,8 @@ def extract_organism(fasta_content: str) -> str:
     return "Unknown"
 
 
-# ── 2. NCBI taxonomy lookup ───────────────────────────────────────────────────
-
 def ncbi_taxon_lookup(organism_name: str) -> tuple[int, list]:
-    """
-    Query NCBI Taxonomy for taxon ID and lineage.
-    Retries up to 3 times with backoff on 429 rate-limit responses.
-    Caches results to avoid re-querying on repeated runs.
-    Returns (taxon_id, lineage_list) or (0, []) on failure.
-    """
-    # Simple file-based cache in /tmp
+
     cache_key = organism_name.lower().replace(' ', '_')
     cache_file = f"/tmp/gemgen_ncbi_{cache_key}.json"
     if os.path.isfile(cache_file):
@@ -114,7 +73,6 @@ def ncbi_taxon_lookup(organism_name: str) -> tuple[int, list]:
     log.info(f"[ncbi_taxon_lookup] Searching NCBI for: '{organism_name}'")
 
     def ncbi_get(url, retries=4):
-        """GET with exponential backoff on 429."""
         for attempt in range(retries):
             try:
                 with urllib.request.urlopen(url, timeout=15) as r:
@@ -132,7 +90,6 @@ def ncbi_taxon_lookup(organism_name: str) -> tuple[int, list]:
         log.error(f"[ncbi_taxon_lookup] Failed after {retries} attempts")
         return None
 
-    # Step 1: esearch
     params = urllib.parse.urlencode({
         'db': 'taxonomy', 'term': organism_name,
         'retmode': 'json', 'api_key': NCBI_API_KEY
@@ -155,7 +112,6 @@ def ncbi_taxon_lookup(organism_name: str) -> tuple[int, list]:
     taxon_id = int(id_list[0])
     log.info(f"[ncbi_taxon_lookup] taxon_id = {taxon_id}")
 
-    # Step 2: efetch — small sleep to be polite even with API key
     time.sleep(0.15)
     params   = urllib.parse.urlencode({
         'db': 'taxonomy', 'id': taxon_id,
@@ -171,7 +127,6 @@ def ncbi_taxon_lookup(organism_name: str) -> tuple[int, list]:
         log.info(f"[ncbi_taxon_lookup] Raw lineage text: '{lineage[:120]}'")
         lineage_list = [x.strip() for x in lineage.split(';') if x.strip()]
 
-        # Cache the result
         with open(cache_file, 'w') as f:
             json.dump({'taxon_id': taxon_id, 'lineage': lineage_list}, f)
 
@@ -181,10 +136,7 @@ def ncbi_taxon_lookup(organism_name: str) -> tuple[int, list]:
         return taxon_id, []
 
 
-# ── 3. Fungi validation ───────────────────────────────────────────────────────
-
 def validate_fungi(lineage: list, organism_name: str) -> None:
-    """Hard-block non-fungal genomes. Allow through if lineage unknown (API failure)."""
     if not lineage:
         log.warning(f"[validate_fungi] Empty lineage for '{organism_name}' — allowing through (API may have failed)")
         return
@@ -203,10 +155,7 @@ def validate_fungi(lineage: list, organism_name: str) -> None:
     )
 
 
-# ── 4. Biological constraints ─────────────────────────────────────────────────
-
 def constraints(taxon_id: int, lineage: list) -> dict:
-    """Build bio_metadata for the JS FBA layer."""
     is_basidio = any('Basidiomycota' in l for l in lineage)
     return {
         "organism_type":           "Fungal",
@@ -216,14 +165,8 @@ def constraints(taxon_id: int, lineage: list) -> dict:
         "subclass":                "Basidiomycota" if is_basidio else "Ascomycota",
     }
 
-
-# ── 5. Load GEM ───────────────────────────────────────────────────────────────
-
 def load_gem(taxon_id: int) -> str:
-    """
-    Load a pre-built GEM SBML for the organism.
-    Tries taxon-specific model first, falls back to default fungal GEM.
-    """
+
     os.makedirs(MODELS_DIR, exist_ok=True)
 
     taxon_model = os.path.join(MODELS_DIR, f"{taxon_id}.xml")
@@ -237,14 +180,11 @@ def load_gem(taxon_id: int) -> str:
         with open(DEFAULT_GEM) as f:
             return f.read()
 
-    # No model available — write a minimal valid SBML stub so the
-    # pipeline completes and the FBA layer can report gracefully
     log.warning("[load_gem] No GEM available — returning minimal stub SBML")
     return _minimal_sbml(taxon_id)
 
 
 def _minimal_sbml(taxon_id: int) -> str:
-    """Full stoichiometric stub with glycolysis, OXPHOS, N and O2 constraints."""
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
       xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2"
@@ -354,7 +294,6 @@ def model_orchestra(fasta_content: str, job_id: str, output_dir: str, organism_n
             }, f, indent=2)
 
     try:
-        # Stage 1: get organism name — form input takes priority over header
         write_status("taxon_detect", "running", "Identifying organism...")
 
         if organism_name_hint and organism_name_hint.strip():
@@ -365,14 +304,11 @@ def model_orchestra(fasta_content: str, job_id: str, output_dir: str, organism_n
 
         write_status("taxon_detect", "running", f"Detected: {organism_name}")
 
-        # Stage 2: NCBI lookup
         taxon_id, lineage = ncbi_taxon_lookup(organism_name)
 
-        # Stage 3: validate fungi
         write_status("validate", "running", f"Validating: {organism_name}")
         validate_fungi(lineage, organism_name)
 
-        # Stage 4: load GEM
         write_status("load_gem", "running", "Loading genome-scale model...")
         model_xml = load_gem(taxon_id)
 
@@ -396,7 +332,6 @@ def model_orchestra(fasta_content: str, job_id: str, output_dir: str, organism_n
         with open(os.path.join(output_dir, "results.json"), "w") as f:
             json.dump(result, f, indent=2)
 
-        # Update all stages to done
         with open(os.path.join(output_dir, "status.json"), "w") as f:
             json.dump({
                 "job_id": job_id, "overall": "done",
@@ -432,8 +367,6 @@ def _write_error(output_dir, job_id, message, status):
     with open(os.path.join(output_dir, "results.json"), "w") as f:
         json.dump({"status": status, "job_id": job_id, "error": message}, f)
 
-
-# ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
