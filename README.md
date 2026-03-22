@@ -5,15 +5,15 @@ FunGem is a web platform that predicts fungal fermentation performance directly 
 What it does
 Given a protein FASTA file and bioreactor conditions, FunGem:
 
-Identifies the organism via NCBI Taxonomy (hard-blocks non-fungal inputs)
-Loads a genome-scale metabolic model (SBML format)
-Runs Flux Balance Analysis entirely in the browser via a pure-JS LP solver
-Applies five bioreactor corrections to bring the theoretical optimum to a realistic prediction
-Outputs the three metrics that matter in industrial bioprocessing:
+1. Identifies the organism via NCBI Taxonomy (hard-blocks non-fungal inputs)
+2. Loads a genome-scale metabolic model (SBML format)
+3. Runs Flux Balance Analysis entirely in the browser via a pure-JS LP solver
+4. Applies five bioreactor corrections to bring the theoretical optimum to a realistic prediction
+5. Outputs the three metrics that matter in industrial bioprocessing:
+      T — Titer  final biomass concentration (g/L)
+      R — Rate  volumetric productivity (g/L/h)
+      Y — Yield  biomass per gram of carbon substrate (g/g)
 
-T — Titer  final biomass concentration (g/L)
-R — Rate  volumetric productivity (g/L/h)
-Y — Yield  biomass per gram of carbon substrate (g/g)
 How it works
 Genome (FASTA) → NCBI taxon detection → fungi validation → SBML model load → FBA (browser, jsLPSolver) → five-factor bioreactor corrections → TRY output
 
