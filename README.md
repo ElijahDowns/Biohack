@@ -25,13 +25,16 @@ The five corrections applied after FBA are where the engineering realism comes i
 5. Maintenance energy coefficient subtraction
 
 Highlights
-\\
+
 FBA runs entirely client-side — no WASM, no server round-trip for computation
 Supports industrial feedstocks: molasses, corn steep liquor, wheat bran, cheese whey, and more
 Genome-driven predictions work for novel organisms and untested media combinations
 Fungi-specific: validates lineage against NCBI Taxonomy before proceeding
 
 Limitations
+
 FunGem is a research prototype. When an organism-specific GEM is unavailable, it falls back to a reference fungal model covering core metabolism (glycolysis, oxidative phosphorylation, biomass synthesis) — all five corrections still apply. The full pipeline is built to integrate with BV-BRC for de novo GEM reconstruction; this is currently limited by server access rather than design.
+
+
 Core idea
 FunGem bridges genomics and bioprocessing — turning a genome sequence and a set of reactor conditions into an actionable TRY prediction, grounded in metabolic network optimisation rather than historical data interpolation.
