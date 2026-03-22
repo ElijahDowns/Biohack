@@ -37,4 +37,6 @@ FunGem is a research prototype. When an organism-specific GEM is unavailable, it
 
 
 Core idea
+
+
 FunGem bridges genomics and bioprocessing — turning a genome sequence and a set of reactor conditions into an actionable TRY prediction, grounded in metabolic network optimisation rather than historical data interpolation.
