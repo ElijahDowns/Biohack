@@ -1,12 +1,5 @@
-/* ============================================================
-   GEMgen — Genome-Scale Metabolic Model Generator
-   Stylesheet: style.css
-   Dark blue, white & black — clean scientific design
-   ============================================================ */
-
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap');
 
-/* ── RESET & VARIABLES ── */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -34,7 +27,6 @@
     --shadow-md:   0 4px 16px rgba(26,58,110,0.12);
 }
 
-/* ── BASE ── */
 body {
     background: var(--bg);
     color: var(--text);
@@ -44,7 +36,6 @@ body {
     min-height: 100vh;
 }
 
-/* Subtle dot-grid background */
 body::before {
     content: '';
     position: fixed;
@@ -64,7 +55,7 @@ body::before {
     z-index: 1;
 }
 
-/* ── TYPOGRAPHY ── */
+
 h2 {
     font-family: var(--sans);
     font-size: 1.9rem;
@@ -107,7 +98,6 @@ hr {
     margin: 36px 0;
 }
 
-/* ── HEADER ── */
 .header {
     background: var(--teal);
     border-bottom: 2px solid var(--green);
@@ -116,7 +106,6 @@ hr {
     overflow: hidden;
 }
 
-/* Blue accent stripe at very top */
 .header::before {
     content: '';
     position: absolute;
@@ -169,7 +158,6 @@ hr {
     opacity: 0.92;
 }
 
-/* ── NAV ── */
 .menu {
     background: var(--white);
     border-bottom: 1px solid var(--border);
@@ -214,12 +202,10 @@ hr {
     text-decoration: none;
 }
 
-/* ── MAIN CONTENT ── */
 .content {
     padding: 44px 0 70px;
 }
 
-/* ── FORM PANEL ── */
 .form-panel {
     background: var(--white);
     border: 1px solid var(--border);
@@ -230,7 +216,7 @@ hr {
     box-shadow: var(--shadow-md);
 }
 
-/* Green top accent bar */
+
 .form-panel::before {
     content: '';
     position: absolute;
@@ -293,7 +279,6 @@ hr {
     padding-right: 36px;
 }
 
-/* ── CHECKBOX GRID ── */
 .check-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -341,7 +326,6 @@ hr {
     margin-top: 2px;
 }
 
-/* ── SUBMIT BUTTON ── */
 .btn-submit {
     display: block;
     margin: 28px auto 0;
@@ -365,7 +349,6 @@ hr {
     transform: translateY(-1px);
 }
 
-/* ── PIPELINE STEPS ── */
 .pipeline {
     margin: 14px 0;
 }
@@ -407,7 +390,6 @@ hr {
     font-weight: 600;
 }
 
-/* ── INFOBOX ── */
 .infobox {
     background: var(--green-pale);
     border: 1px solid var(--green-mid);
@@ -419,7 +401,6 @@ hr {
     margin: 12px 0;
 }
 
-/* ── ALERTS ── */
 .success {
     background: var(--green-pale);
     border: 1px solid var(--green-mid);
@@ -442,7 +423,6 @@ hr {
     font-size: 0.88rem;
 }
 
-/* ── TAG BADGE ── */
 .tag {
     display: inline-block;
     background: var(--green-pale);
@@ -458,7 +438,6 @@ hr {
     vertical-align: middle;
 }
 
-/* ── FOOTER ── */
 .footer {
     background: var(--white);
     border-top: 1px solid var(--border);
@@ -477,7 +456,6 @@ hr {
     color: var(--green);
 }
 
-/* ── RESPONSIVE ── */
 @media (max-width: 1000px) {
     .check-grid { grid-template-columns: 1fr 1fr; }
     .container  { max-width: 100%; padding: 0 28px; }
@@ -495,8 +473,6 @@ hr {
     .container       { padding: 0 16px; }
 }
 
-
-/* ── FORM SECTION LABELS ── */
 .section-label {
     font-family: var(--sans);
     font-size: 0.72rem;
@@ -517,7 +493,6 @@ hr {
     font-size: 0.78rem;
 }
 
-/* ── 4-COLUMN BIOREACTOR ROW ── */
 .field-row-4 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -559,7 +534,6 @@ hr {
 
 .field-col select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,140,82,0.12); }
 
-/* ── ADVANCED OPTIONS ── */
 .adv-section {
     margin: 20px 0 8px;
     border: 1px solid var(--border);
@@ -596,7 +570,6 @@ hr {
     background: var(--white);
 }
 
-/* input + unit inline */
 .input-unit-row {
     display: flex;
     gap: 8px;
@@ -616,7 +589,6 @@ hr {
     padding-right: 28px;
 }
 
-/* ── RESULTS PAGE ── */
 .results-header {
     display: flex;
     align-items: flex-start;
@@ -647,7 +619,6 @@ hr {
 
 .btn-back:hover { background: var(--green-mid); text-decoration: none; }
 
-/* Output metric cards */
 .output-cards {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -779,7 +750,6 @@ hr {
 .driver-direction--negative { color: #d94040; }
 .driver-direction--neutral  { color: var(--text-dim); }
 
-/* Run parameter summary */
 .summary-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -813,7 +783,6 @@ hr {
 
 .summary-val code { font-family: var(--mono); font-size: 0.8rem; }
 
-/* Results action buttons */
 .results-actions {
     display: flex;
     gap: 14px;
@@ -836,7 +805,6 @@ hr {
 
 .btn-outline:hover { background: var(--green-pale); }
 
-/* ── RESPONSIVE ADDITIONS ── */
 @media (max-width: 1000px) {
     .field-row-4   { grid-template-columns: 1fr 1fr; }
     .summary-grid  { grid-template-columns: repeat(2, 1fr); }
@@ -851,8 +819,6 @@ hr {
     .results-header { flex-direction: column; }
 }
 
-
-/* ── PIPELINE STRIP ── */
 .pipeline-strip {
     display: flex;
     align-items: center;
@@ -906,7 +872,6 @@ hr {
     flex-shrink: 0;
 }
 
-/* ── TWO-COLUMN SUBSTRATE FIELDS ── */
 .two-col-fields {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -939,7 +904,6 @@ hr {
     font-size: 0.78rem;
 }
 
-/* ── C:N RATIO DISPLAY ── */
 .cn-ratio-display {
     background: var(--green-pale);
     border: 1px solid var(--green-mid);
@@ -962,7 +926,6 @@ hr {
     margin-left: 4px;
 }
 
-/* ── THREE-CARD TRY OUTPUT ── */
 .output-cards--three {
     grid-template-columns: 1fr 1fr 1fr;
 }
@@ -995,7 +958,6 @@ hr {
     font-family: var(--sans);
 }
 
-/* ── DRIVER ROWS — expandable ── */
 .driver-row-wrap {
     border-bottom: 1px solid var(--border);
 }
@@ -1029,7 +991,6 @@ hr {
     line-height: 1.6;
 }
 
-/* ── SUGGESTIONS ── */
 .suggestions-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1070,7 +1031,6 @@ hr {
     line-height: 1.6;
 }
 
-/* ── RESPONSIVE ADDITIONS ── */
 @media (max-width: 1000px) {
     .output-cards--three  { grid-template-columns: 1fr 1fr; }
     .suggestions-grid     { grid-template-columns: 1fr 1fr; }
@@ -1083,11 +1043,6 @@ hr {
     .pipeline-strip       { display: none; }
 }
 
-
-/* ═══════════════════════════════════════════════════════
-   PROGRESS PAGE
-   ═══════════════════════════════════════════════════════ */
-
 .progress-layout {
     display: grid;
     grid-template-columns: 1fr 320px;
@@ -1096,7 +1051,6 @@ hr {
     margin-top: 8px;
 }
 
-/* ── Stage tracker (left column) ── */
 .stage-tracker {
     background: var(--white);
     border: 1px solid var(--border);
@@ -1123,7 +1077,6 @@ hr {
 .stage-connector--top    { height: 10px; align-self: start; }
 .stage-connector--bottom { height: 10px; align-self: end; }
 
-/* Hide connectors on first/last */
 .stage-item:first-child .stage-connector--top,
 .stage-item:last-child  .stage-connector--bottom { visibility: hidden; }
 
@@ -1191,7 +1144,6 @@ hr {
 .stage-badge--warning { background: #fff3cd;           color: #8a6000; }
 .stage-badge--error   { background: #fdf2f2;           color: #d94040; }
 
-/* Branch indicator */
 .branch-indicator {
     display: flex;
     align-items: center;
@@ -1217,7 +1169,6 @@ hr {
     white-space: nowrap;
 }
 
-/* Parallel stage columns */
 .parallel-stages {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1262,7 +1213,6 @@ hr {
 .stage-item--parallel .stage-content { grid-column: 2; }
 .stage-item--parallel .stage-badge   { grid-column: 3; }
 
-/* ── Sidebar (right column) ── */
 .progress-sidebar {
     display: flex;
     flex-direction: column;
@@ -1309,7 +1259,6 @@ hr {
     font-family: var(--mono);
 }
 
-/* Params summary */
 .progress-params {
     background: var(--white);
     border: 1px solid var(--border);
@@ -1341,7 +1290,6 @@ hr {
 .progress-param-row:last-child { border-bottom: none; }
 .progress-param-row code { font-family: var(--mono); font-size: 0.76rem; color: var(--text); }
 
-/* Log box */
 .progress-log-box {
     background: var(--white);
     border: 1px solid var(--border);
@@ -1373,16 +1321,10 @@ hr {
     background: var(--bg);
 }
 
-/* ── Responsive ── */
 @media (max-width: 900px) {
     .progress-layout    { grid-template-columns: 1fr; }
     .parallel-stages    { grid-template-columns: 1fr; }
 }
-
-
-/* ═══════════════════════════════════════════════════════
-   RESULTS PAGE — TRY COMPARISON TABLE
-   ═══════════════════════════════════════════════════════ */
 
 .memote-badge {
     font-family: var(--sans);
@@ -1457,7 +1399,6 @@ hr {
 .try-delta--zero { color: var(--text-dim); }
 .try-delta-pct   { font-size: 0.74rem; color: var(--text-dim); margin-top: 2px; }
 
-/* Solver status row */
 .solver-status-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -1479,10 +1420,6 @@ hr {
 .solver-val   { font-family: var(--mono); font-size: 0.8rem; color: var(--text); }
 .solver-val--ok   { color: var(--green); font-weight: 700; }
 .solver-val--warn { color: #d94040; font-weight: 700; }
-
-/* ═══════════════════════════════════════════════════════
-   HISTORY PAGE
-   ═══════════════════════════════════════════════════════ */
 
 .history-table {
     border: 1px solid var(--border);
@@ -1530,9 +1467,7 @@ hr {
 .history-status { font-size: 0.78rem; color: var(--text-dim); }
 .history-status--error { color: #d94040; }
 
-/* ═══════════════════════════════════════════════════════
-   CREDITS PAGE
-   ═══════════════════════════════════════════════════════ */
+
 
 .credits-table {
     border: 1px solid var(--border);
@@ -1561,12 +1496,10 @@ hr {
     color: var(--text-dim);
 }
 
-/* Credits table with only 2 cols */
 .credits-table .credits-row:not(.credits-row--header):has(:nth-child(2):last-child) {
     grid-template-columns: 2fr 3fr;
 }
 
-/* ── RESPONSIVE ADDITIONS ── */
 @media (max-width: 1000px) {
     .try-row              { grid-template-columns: 160px 1fr 1fr; }
     .try-delta-col        { display: none; }
@@ -1586,8 +1519,6 @@ hr {
     .history-row          { grid-template-columns: 1fr auto; }
 }
 
-
-/* ── CORRECTION FACTORS STRIP ── */
 .correction-strip {
     display: flex;
     gap: 0;
