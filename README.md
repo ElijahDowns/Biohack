@@ -1,5 +1,9 @@
 FunGem
+
+
 Biohackathon 6 — Pacifico Biolabs GmbH
+
+
 FunGem is a web platform that predicts fungal fermentation performance directly from genome data. It combines genome-scale metabolic modelling, Flux Balance Analysis, and bioreactor-aware corrections to estimate key industrial metrics in seconds — without running a single experiment.
 
 What it does
