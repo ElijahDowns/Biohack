@@ -17,10 +17,8 @@ log = logging.getLogger(__name__)
 NCBI_ESEARCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 NCBI_EFETCH  = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
 
-# NCBI API key — read from environment variable (set in ~/.bashrc or server config)
-# export NCBI_API_KEY=bc81dc27024bce567d64cb201a28e9ad8508
+# export NCBI_API_KEY
 NCBI_API_KEY = os.environ.get("NCBI_API_KEY", "bc81dc27024bce567d64cb201a28e9ad8508")
-
 MODELS_DIR   = os.path.join(os.path.dirname(__file__), "models")
 DEFAULT_GEM  = os.path.join(MODELS_DIR, "default_fungi.xml")
 
